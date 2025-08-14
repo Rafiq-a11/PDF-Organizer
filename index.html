@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <title>নিশাত পিডিএফ অর্গানাইজার (Developed By Nishat Software Lab)</title>
+  <style>
+    /* --- Reset & Base --- */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      padding-bottom: 60px; /* ফুটারের জন্য নিচে জায়গা রাখলাম */
+      max-width: 900px;
+      margin: auto;
+      background: #e8f0fe; /* হালকা নীল ব্যাকগ্রাউন্ড */
+      color: #2c3e50; /* গাঢ় নীল/গ্রে রঙ */
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    h2 {
+      text-align: center;
+      color: #2a52be; /* নীল রঙ */
+      margin-bottom: 15px;
+      font-weight: 700;
+      text-shadow: 1px 1px 3px #b8d1ff;
+    }
+    #instructions {
+      font-size: 14px; 
+      color: #1a3a8a;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      background: #dbe9ff;
+      border: 1px solid #9bbcff;
+      border-radius: 6px;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(60, 120, 255, 0.3);
+    }
+    #controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 900px;
+      flex-wrap: wrap;
+    }
+    label {
+      font-weight: 600;
+      color: #2a52be;
+      user-select: none;
+      min-width: 170px;
+    }
+    input[type="file"] {
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #88aaff;
+      padding: 4px 6px;
+      background: #dbe9ff;
+      color: #1a3a8a;
+      transition: background-color 0.3s ease;
+      flex-grow: 1;
+      min-width: 200px;
+    }
+    input[type="file"]:hover {
+      background: #aac9ff;
+    }
+    input[type="text"], input[type="number"] {
+      font-size: 14px;
+      padding: 6px 10px;
+      border: 1px solid #88aaff;
+      border-radius: 5px;
+      width: 250px;
+      color: #1a3a8a;
+      background: #dbe9ff;
+      transition: box-shadow 0.3s ease;
+    }
+    input[type="number"] {
+      width: 90px;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      box-shadow: 0 0 5px 2px #3a62e8aa;
+    }
+    select {
+      font-size: 14px;
+      padding: 6px 10px;
+      border: 1px solid #88aaff;
+      border-radius: 5px;
+      color: #1a3a8a;
+      background: #dbe9ff;
+      cursor: pointer;
+      min-width: 150px;
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+    select:focus {
+      outline: none;
+      box-shadow: 0 0 5px 2px #3a62e8aa;
+    }
+
+    /* Buttons grouped on one line with small vertical padding and consistent spacing */
+    #controls > .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 15px; /* 10px vertically, 15px horizontally */
+      margin-bottom: 10px;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    button {
+      background: #3a62e8; /* গাঢ় নীল */
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 600;
+      box-shadow: 0 3px 6px #3a62e899;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      min-width: 150px;
+      line-height: 1.2;
+    }
+    button:hover:not(:disabled) {
+      background: #2a4ecb;
+      box-shadow: 0 5px 10px #2a4ecbcc;
+    }
+    button:disabled {
+      background: #aac4ff;
+      cursor: not-allowed;
+      box-shadow: none;
+      color: #e0e7ff;
+    }
+    #compressCheckbox {
+      cursor: pointer;
+      transform: scale(1.1);
+      vertical-align: middle;
+      margin-left: 6px;
+      margin-right: 3px;
+    }
+    #compressLabel {
+      font-size: 14px;
+      color: #1a3a8a;
+      cursor: pointer;
+      user-select: none;
+    }
+    #pagesList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      user-select: none;
+      min-height: 150px;
+      padding-bottom: 20px;
+      border: 2px dashed #a6c8ff;
+      border-radius: 12px;
+      background: #e9f1ff;
+      box-shadow: inset 0 0 15px #a6c8ffaa;
+      transition: background-color 0.3s ease;
+      outline: none;
+    }
+    #pagesList:hover {
+      background-color: #dbe9ff;
+    }
+    .page-tile {
+      width: 130px;
+      border: 2px solid #a3bfff;
+      padding: 7px 6px 10px 6px;
+      background: #f0f5ff;
+      cursor: grab;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 10px;
+      box-shadow: 1px 1px 8px #b2c4ffaa;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+      user-select: none;
+      outline: none;
+    }
+    .page-tile.dragging {
+      opacity: 0.5;
+      border-color: #3a62e8;
+      cursor: grabbing;
+      box-shadow: 0 0 12px #3a62e8;
+    }
+    .page-tile.selected {
+      border-color: #264dcb;
+      box-shadow: 0 0 12px 3px #264dcb88;
+      background: #dbe6ff;
+    }
+    .page-tile img, .page-tile canvas {
+      max-width: 100%;
+      max-height: 150px;
+      border: 1px solid #a3bfff;
+      margin-bottom: 8px;
+      object-fit: contain;
+      pointer-events: none;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px #b2c4ff;
+    }
+    .page-tile button {
+      background: #3a62e8;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      align-self: stretch;
+      margin-top: auto;
+    }
+    .page-tile button:hover {
+      background: #264dcb;
+    }
+    /* Modal styles */
+    #modalOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(42, 82, 190, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      user-select: none;
+    }
+    #modalContent {
+      background: white;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 8px 20px #2a52becc;
+      user-select: none;
+    }
+    #modalContent img, #modalContent canvas {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    #modalClose {
+      position: fixed;
+      top: 12px;
+      right: 18px;
+      font-size: 32px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+      z-index: 10000;
+      text-shadow: 1px 1px 4px #000;
+      transition: color 0.3s ease;
+    }
+    #modalClose:hover {
+      color: #b0c9ff;
+    }
+
+    /* ভাসমান ফুটার */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #dbe9ff;
+      padding: 16px 20px;
+      font-size: 18px;
+      color: #2a52be;
+      font-weight: 600;
+      text-align: center;
+      user-select: none;
+      box-shadow: 0 -2px 5px rgba(42, 82, 190, 0.3);
+      z-index: 10000;
+    }
+  </style>
+</head>
+<!-- পাসওয়ার্ড ইনপুট ও সেটআপ ওভারলে -->
+<div id="passwordOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f9f9f9; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Siyam Rupali', sans-serif;">
+  <div style="background: white; padding: 30px 40px; border-radius: 10px; box-shadow: 0 0 15px #bbb; text-align: center; max-width: 320px;">
+    <h3 id="formTitle" style="margin-bottom: 15px;">পাসওয়ার্ড দিন</h3>
+
+    <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড লিখুন" style="padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 1em;">
+
+    <!-- নতুন পাসওয়ার্ড সেট করার ইনপুট (শুধু একবার দেখা যাবে) -->
+    <input type="password" id="newPasswordInput" placeholder="নতুন পাসওয়ার্ড দিন" style="padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 1em; display: none;">
+
+    <button id="submitBtn" onclick="handlePassword()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">প্রবেশ করুন</button>
+
+    <p id="wrongPassMsg" style="color: red; display: none; margin-top: 10px;">ভুল পাসওয়ার্ড!</p>
+
+    <!-- Reset বাটন -->
+    <button onclick="resetToDefault()" style="margin-top: 15px; background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">পাসওয়ার্ড রিসেট করুন</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const savedPass = localStorage.getItem("customPassword");
+  if (!savedPass) {
+    // নতুন পাসওয়ার্ড না থাকলে সময়ভিত্তিক ডিফল্ট পাসওয়ার্ড চাইবে
+    document.getElementById("formTitle").textContent = "ডিফল্ট পাসওয়ার্ড দিন";
+  } else {
+    document.getElementById("formTitle").textContent = "পাসওয়ার্ড দিন";
+  }
+});
+
+// সময়ভিত্তিক ডিফল্ট পাসওয়ার্ড জেনারেটর
+function getCurrentTimePassword() {
+  const now = new Date();
+  let hours = now.getHours().toString();
+  let minutes = now.getMinutes().toString();
+
+  // দুই অঙ্কে ফরম্যাট করতে চাইলে নিচের কমেন্ট আনকমেন্ট করো
+  // hours = hours.padStart(2, '0');
+  // minutes = minutes.padStart(2, '0');
+
+  return `Land@${hours}.${minutes}`;
+}
+
+function handlePassword() {
+  const enteredPassword = document.getElementById("passwordInput").value;
+  const savedPassword = localStorage.getItem("customPassword");
+
+  if (!savedPassword) {
+    // ডিফল্ট সময়ভিত্তিক পাসওয়ার্ড দিয়ে চেক
+    if (enteredPassword === getCurrentTimePassword()) {
+      // সঠিক পাসওয়ার্ড, এখন নতুন পাসওয়ার্ড চাইবে
+      document.getElementById("newPasswordInput").style.display = "block";
+      document.getElementById("formTitle").textContent = "নতুন পাসওয়ার্ড দিন";
+      document.getElementById("wrongPassMsg").style.display = "none";
+
+      document.getElementById("submitBtn").onclick = saveNewPassword;
+    } else {
+      document.getElementById("wrongPassMsg").style.display = "block";
+    }
+  } else {
+    // কাস্টম পাসওয়ার্ড দিয়ে চেক
+    if (enteredPassword === savedPassword) {
+      document.getElementById("passwordOverlay").style.display = "none";
+    } else {
+      document.getElementById("wrongPassMsg").style.display = "block";
+    }
+  }
+}
+
+function saveNewPassword() {
+  const newPassword = document.getElementById("newPasswordInput").value;
+  if (newPassword.length >= 4) {
+    localStorage.setItem("customPassword", newPassword);
+    document.getElementById("passwordOverlay").style.display = "none";
+  } else {
+    alert("নতুন পাসওয়ার্ড অন্তত ৪ অক্ষরের হতে হবে");
+  }
+}
+
+function resetToDefault() {
+  localStorage.removeItem("customPassword");
+  location.reload();
+}
+</script>
+</body>
+
+<h2>নিশাত পিডিএফ অর্গানাইজার (Developed By Nishat Software Lab)</h2>
+
+<div id="controls">
+  <div class="control-group">
+    <label for="pdfInput">PDF ফাইল সিলেক্ট করুন (একাধিক): </label>
+    <input type="file" id="pdfInput" accept="application/pdf" multiple />
+  </div>
+
+  <div class="control-group">
+    <label for="imageInput">ইমেজ ফাইল সিলেক্ট করুন (একাধিক): </label>
+    <input type="file" id="imageInput" multiple accept="image/*" />
+  </div>
+
+  <!-- Image Quality and Resolution Input -->
+  <div class="control-group">
+    <label for="imageQualitySelect">ইমেজ কোয়ালিটি:</label>
+    <select id="imageQualitySelect">
+      <option value="0.3">Low (কম)</option>
+      <option value="0.6" selected>Medium (মধ্যম)</option>
+      <option value="0.9">High (উচ্চ)</option>
+    </select>
+
+    <label for="imageResolutionInput" style="min-width: 180px;">ইমেজ রেজুলেশন (উচ্চতা px):</label>
+    <input type="number" id="imageResolutionInput" min="0" max="5000" value="1250" />
+  </div>
+
+  <!-- Grouped buttons in one line -->
+  <div class="button-group">
+    <button id="addImagePageBtn">নতুন পেজ (ইমেজ থেকে) অ্যাড করুন</button>
+    <button id="savePdfBtn" disabled>PDF সেভ করুন</button>
+    <button id="saveSelectedPdfBtn" disabled>সিলেক্টেড পেজ দিয়ে আলাদা PDF তৈরি করুন</button>
+    <button id="deselectAllBtn" disabled>সব পেজ ডিসিলেক্ট করুন</button>
+    <button id="resetBtn">রিসেট</button>
+  </div>
+
+  <div class="control-group" style="align-items: center;">
+    <input type="checkbox" id="compressCheckbox" checked />
+    <label for="compressCheckbox" id="compressLabel">কম্প্রেশন চালু রাখুন (extreme compression)</label>
+  </div>
+
+  <div class="control-group">
+    <label for="fileNameInput">নাম দিয়ে সেভ করুন: </label>
+    <input type="text" id="fileNameInput" placeholder="ফাইলের নাম লিখুন (বিনা .pdf)" />
+  </div>
+</div>
+
+<div id="pagesList" tabindex="0" aria-label="Pages List"></div>
+
+<!-- Modal -->
+<div id="modalOverlay">
+  <div id="modalContent"></div>
+  <div id="modalClose" title="Close">&times;</div>
+</div>
+
+<footer>
+  Developed By: Nishat Software Lab, Address: Ukil Potti, Patharghata, Barguna, Mobile No: 01744389598, E-mail: rafiqhowlader2013@gmail.com
+</footer>
+
+<!-- Libraries -->
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+
+<script>
+  const pdfInput = document.getElementById('pdfInput');
+  const imageInput = document.getElementById('imageInput');
+  const pagesList = document.getElementById('pagesList');
+  const addImagePageBtn = document.getElementById('addImagePageBtn');
+  const savePdfBtn = document.getElementById('savePdfBtn');
+  const saveSelectedPdfBtn = document.getElementById('saveSelectedPdfBtn');
+  const deselectAllBtn = document.getElementById('deselectAllBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const compressCheckbox = document.getElementById('compressCheckbox');
+  const fileNameInput = document.getElementById('fileNameInput');
+  const imageQualitySelect = document.getElementById('imageQualitySelect');
+  const imageResolutionInput = document.getElementById('imageResolutionInput');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalContent = document.getElementById('modalContent');
+  const modalClose = document.getElementById('modalClose');
+
+  let pages = [];    // এখন সব পেজ টাইপ 'image' থাকবে
+
+  function updateButtons() {
+    savePdfBtn.disabled = pages.length === 0;
+    saveSelectedPdfBtn.disabled = pages.filter(p => p.selected).length === 0;
+    deselectAllBtn.disabled = pages.filter(p => p.selected).length === 0;
+  }
+
+  // Initialize Sortable
+  const sortable = Sortable.create(pagesList, {
+    animation: 150,
+    ghostClass: 'dragging',
+    onEnd: () => {
+      const newPages = [];
+      const divs = pagesList.querySelectorAll('.page-tile');
+      divs.forEach(div => {
+        const idx = parseInt(div.getAttribute('data-index'));
+        newPages.push(pages[idx]);
+      });
+      pages = newPages;
+      renderPages();
+    }
+  });
+
+  // Render page thumbnails
+  async function renderPages() {
+    pagesList.innerHTML = '';
+    for(let i=0; i<pages.length; i++) {
+      const page = pages[i];
+
+      const tile = document.createElement('div');
+      tile.className = 'page-tile';
+      tile.setAttribute('data-index', i);
+      tile.title = `Page ${i+1}`;
+      tile.tabIndex = 0;
+      if(page.selected) tile.classList.add('selected');
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'ডিলিট';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        pages.splice(i, 1);
+        renderPages();
+        updateButtons();
+      };
+      tile.appendChild(delBtn);
+
+      if(page.type === 'image') {
+        const img = document.createElement('img');
+        img.src = page.data;
+        tile.insertBefore(img, delBtn);
+      }
+
+      // Select page on click (toggle)
+      tile.addEventListener('click', (e) => {
+        if(e.target.tagName === 'BUTTON') return;
+        pages[i].selected = !pages[i].selected;
+        if(pages[i].selected) {
+          tile.classList.add('selected');
+        } else {
+          tile.classList.remove('selected');
+        }
+        updateButtons();
+      });
+
+      // Open modal on double click
+      tile.addEventListener('dblclick', () => openModal(i));
+
+      // Open modal on right click (context menu)
+      tile.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        openModal(i);
+      });
+
+      pagesList.appendChild(tile);
+    }
+    updateButtons();
+  }
+
+  // Convert file to dataURL (image)
+  function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = e => reject(e);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // PDF input change (PDF page গুলোকে JPEG ইমেজে কনভার্ট করে যোগ করব)
+  pdfInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    for (const file of files) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfjsDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+        for (let i = 0; i < pdfjsDoc.numPages; i++) {
+          const pdfPage = await pdfjsDoc.getPage(i + 1);
+          const viewport = pdfPage.getViewport({ scale: 2 });  // quality জন্য scale বাড়ানো হয়েছে
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+
+          await pdfPage.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          // Canvas থেকে JPEG DataURL নিন (quality 0.9 ধরে নেয়া)
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+          pages.push({
+            type: 'image',
+            data: dataUrl,
+            selected: false,
+          });
+        }
+      } catch (err) {
+        alert('PDF লোডে সমস্যা হয়েছে: ' + err.message);
+      }
+    }
+    renderPages();
+    updateButtons();
+    pdfInput.value = '';
+  });
+
+  // ইমেজ ইনপুট থেকে পেজ যোগ করা
+  imageInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      try {
+        const dataUrl = await fileToDataURL(file);
+        pages.push({ type: 'image', data: dataUrl, selected: false });
+      } catch {
+        alert('ইমেজ ফাইল পড়তে সমস্যা হয়েছে।');
+      }
+    }
+    renderPages();
+    updateButtons();
+    imageInput.value = '';
+  });
+
+  // নতুন পেজ অ্যাড করার বাটন (ইমেজ ইনপুট ট্রিগার)
+  addImagePageBtn.addEventListener('click', () => {
+    imageInput.click();
+  });
+
+  // JPEG কম্প্রেশন ফাংশন (canvas resize + quality adjust)
+  async function compressJpeg(dataUrl, quality = 0.6, targetHeight = 1250) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        let scale = targetHeight / img.height;
+        if (scale > 1) scale = 1; // upscale না করব
+
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => {
+        // কোনো কারণে ইমেজ লোড না হলে আসল dataUrl ফিরিয়ে দিব
+        resolve(dataUrl);
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  // DataURL to Uint8Array converter
+  function dataURLToArrayBuffer(dataURL) {
+    const base64 = dataURL.split(',')[1];
+    const binary = atob(base64);
+    const len = binary.length;
+    const buffer = new Uint8Array(len);
+    for(let i=0; i<len; i++) {
+      buffer[i] = binary.charCodeAt(i);
+    }
+    return buffer;
+  }
+
+  // PDF তৈরি ও সেভ করা
+  async function createAndSavePdf(allPages, fileName) {
+    if (!allPages || allPages.length === 0) {
+      alert('কোন পেজ নেই সেভ করার জন্য।');
+      return;
+    }
+
+    const newPdfDoc = await PDFLib.PDFDocument.create();
+
+    const imgQuality = compressCheckbox.checked ? (parseFloat(imageQualitySelect.value) || 0.6) : 1;
+    let targetHeight = parseInt(imageResolutionInput.value);
+    if (isNaN(targetHeight) || targetHeight < 50) targetHeight = 1250;
+    if (targetHeight > 5000) targetHeight = 5000;
+
+    for (const page of allPages) {
+      if (page.type === 'image') {
+        let compressedDataUrl = page.data;
+
+        if (page.data.startsWith('data:image/jpeg') || page.data.startsWith('data:image/jpg') || page.data.startsWith('data:image/png')) {
+          compressedDataUrl = await compressJpeg(page.data, imgQuality, targetHeight);
+        }
+
+        const imgBytes = dataURLToArrayBuffer(compressedDataUrl);
+
+        try {
+          const img = await newPdfDoc.embedJpg(imgBytes);
+          const { width, height } = img.scale(1);
+
+          const pdfPage = newPdfDoc.addPage([width, height]);
+          pdfPage.drawImage(img, {
+            x: 0,
+            y: 0,
+            width: width,
+            height: height,
+          });
+        } catch {
+          // যদি jpg/embed তে সমস্যা হয়, PNG হিসেবে ট্রাই করুন
+          try {
+            const imgPng = await newPdfDoc.embedPng(imgBytes);
+            const { width, height } = imgPng.scale(1);
+
+            const pdfPage = newPdfDoc.addPage([width, height]);
+            pdfPage.drawImage(imgPng, {
+              x: 0,
+              y: 0,
+              width: width,
+              height: height,
+            });
+          } catch (e) {
+            alert('ছবিটি এম্বেড করতে সমস্যা হয়েছে।');
+          }
+        }
+      }
+    }
+
+    const pdfBytes = await newPdfDoc.save({ useObjectStreams: false });
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (fileName && fileName.trim() !== '') ? fileName.trim() + '.pdf' : 'merged_pdf.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // Save all pages as PDF
+  savePdfBtn.addEventListener('click', async () => {
+    await createAndSavePdf(pages, fileNameInput.value);
+  });
+
+  // Save only selected pages as PDF
+  saveSelectedPdfBtn.addEventListener('click', async () => {
+    const selectedPages = pages.filter(p => p.selected);
+    if(selectedPages.length === 0) {
+      alert('দয়া করে প্রথমে কিছু পেজ সিলেক্ট করুন।');
+      return;
+    }
+    await createAndSavePdf(selectedPages, fileNameInput.value);
+  });
+
+  // Deselect all pages
+  deselectAllBtn.addEventListener('click', () => {
+    pages.forEach(p => p.selected = false);
+    renderPages();
+    updateButtons();
+  });
+
+  // Reset all
+  resetBtn.addEventListener('click', () => {
+    if(confirm('সত্যিই সব পেজ রিসেট করবেন?')) {
+      pages = [];
+      renderPages();
+      updateButtons();
+      fileNameInput.value = '';
+    }
+  });
+
+  // Modal open
+  function openModal(index) {
+    modalOverlay.style.display = 'flex';
+    modalContent.innerHTML = '';
+
+    const page = pages[index];
+    if(page.type === 'image') {
+      const img = document.createElement('img');
+      img.src = page.data;
+      modalContent.appendChild(img);
+    }
+  }
+
+  // Modal close
+  modalClose.addEventListener('click', () => {
+    modalOverlay.style.display = 'none';
+    modalContent.innerHTML = '';
+  });
+
+  // Click outside modalContent to close
+  modalOverlay.addEventListener('click', (e) => {
+    if(e.target === modalOverlay) {
+      modalOverlay.style.display = 'none';
+      modalContent.innerHTML = '';
+    }
+  });
+
+  // Keyboard: ESC to close modal
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+      modalOverlay.style.display = 'none';
+      modalContent.innerHTML = '';
+    }
+  });
+
+  // Initial render (empty)
+  renderPages();
+  updateButtons();
+</script>
+
+</body>
+</html>
